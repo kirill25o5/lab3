@@ -7,7 +7,7 @@ class TestMNISTModel(unittest.TestCase):
         # Загружаем данные MNIST и делим на тренировочный и тестовый наборы
         (self.x_train, self.y_train), (self.x_test, self.y_test) = \
             tf.keras.datasets.mnist.load_data()
-        
+
         # Берём только 10% от общего количества данных для ускорения тестов
         fraction = 0.1
         num_train_samples = int(len(self.x_train) * fraction)
@@ -47,12 +47,12 @@ class TestMNISTModel(unittest.TestCase):
         model.compile(optimizer='adam',
                       loss='categorical_crossentropy',
                       metrics=['accuracy'])
-        
+
         # Обучаем модель на 1 эпоху
         history = model.fit(self.x_train_10, self.y_train_10,
                             epochs=1, batch_size=32,
                             validation_data=(self.x_test_10, self.y_test_10))
-        
+
         # Проверяем, что обучающий процесс прошёл успешно
         self.assertGreater(len(history.history['loss']), 0, "Эпоха обучения не выполнена")
         self.assertGreaterEqual(history.history['accuracy'][0], 0, "Точность обучения некорректна")
@@ -72,10 +72,10 @@ class TestMNISTModel(unittest.TestCase):
                       loss='categorical_crossentropy',
                       metrics=['accuracy'])
         model.fit(self.x_train_10, self.y_train_10, epochs=1, batch_size=32)
-        
+
         # Оцениваем модель на тестовых данных
         test_loss, test_acc = model.evaluate(self.x_test_10, self.y_test_10)
-        
+
         # Убедимся, что точность находится в разумных пределах
         self.assertGreaterEqual(test_acc, 0, "Точность не может быть меньше 0")
         self.assertLessEqual(test_acc, 1, "Точность не может быть больше 1")
