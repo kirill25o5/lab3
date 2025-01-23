@@ -2,6 +2,7 @@ import unittest
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 
+
 class TestMNISTModel(unittest.TestCase):
     def setUp(self):
         # Загружаем данные MNIST и делим на тренировочный и тестовый наборы
