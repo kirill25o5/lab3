@@ -1,0 +1,51 @@
+name: Python application
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        python-version: [3.x]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run linters (Flake8)
+      run: |
+        flake8 .
+        
+    - name: Check dependencies for vulnerabilities
+      run: |
+        pip-audit
+    - name: Build Docker image
+      run: |
+        docker build -t myapp .
+
+    - name: Check Dockerfile vulnerabilities with Trivy
+      run: |
+        curl -sfL https://github.com/aquasecurity/trivy/releases/download/v0.34.0/trivy_0.34.0_Linux-64bit.deb -o trivy.deb
+        sudo dpkg -i trivy.deb
+        trivy image myapp
+        
+    - name: Run tests
+      env:
+        API_KEY: ${{ secrets.API_KEY }}  # Использование секрета
+      run: |
+        python -m unittest discover
